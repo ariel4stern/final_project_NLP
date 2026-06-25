@@ -1,0 +1,14 @@
+
+Write a short analysis (5–8 sentences)
+In a comment block or a print statement at the end of your file, answer:
+
+• Which query returned the most relevant results, and why?
+--- ANSWER --  Query: 'film involving the subconscious mind', because its share the same meaning as dream and 'subconscious mind'.
+
+• Did any query return a surprisingly good match — a document that matched the concept even though it didn't share any words?
+--- ANSWER --  No but really close in the meaning,  the best I got was Distance: 0.4056  |  "Inception — a sci-fi heist thriller about entering
+               layered dream worlds to plant ideas in the subconscious mind while struggling to distinguish reality from illusion..."
+
+• What distance threshold would you use to decide "this result is relevant"?
+--- ANSWER --  I would use ~0.65 threshold on the result, after you run movies_queries.py you can see it,
+               after threshold 0.65 it is loosing it logic connection.
