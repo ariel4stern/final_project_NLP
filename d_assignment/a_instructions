@@ -6,12 +6,15 @@ Instructions for restaurant manager:
 
 
 1. install docker desktop (for free n8n) and ngrok (to publish n8n)
+
 2. go in cmd navigate(cd) to docker-compose dir of n8n, and run "docker compose up"
-   if you dont have OPENAI_KEY do the same process as n8n docker-compose but now
+   if you dont have OPENAI_API_KEY do the same process as n8n docker-compose but now
    navigate to ollama docker-compose dir and run the command.
    after in terminal of the project write this command to pull
    the ollama3.8b model run:   docker exec ollama ollama pull llama3:8b.
+
 3.install requirements.txt in Terminal: py -m pip install -r requirements.txt
+
 4.open ngrok and publish the port commands: ngrok config add-authtoken {your_ngrok_key}.
                                             ngrok http {port_number}. (our port is 5678)
 
