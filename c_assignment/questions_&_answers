@@ -1,0 +1,17 @@
+[{'role': 'user', 'metadata': None, 'content': [{'text': 'איפה הדמות הראשית גרה?', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': "הדמות הראשית, סנופ דוג, גרה בלונג ביץ', קליפורניה. [1]", 'type': 'text'}], 'options': None},
+
+{'role': 'user', 'metadata': None, 'content': [{'text': 'מתי היא צמחה לראשונה?', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': 'אין מידע על מתי סנופ דוג צמח לראשונה.', 'type': 'text'}], 'options': None},
+
+{'role': 'user', 'metadata': None, 'content': [{'text': 'מתי היא הצליח לראשונה?', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': 'סנופ דוג הצליח לראשונה בתחילת שנות ה-90 כאשר שיתף פעולה עם ד"ר דרה והופיע באלבום "The Chronic". [2]', 'type': 'text'}], 'options': None}]
+
+{'role': 'user', 'metadata': None, 'content': [{'text': 'איפה הדמות הראשית למדה בתיכון?', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': 'אין מידע על היכן סנופ דוג למד בתיכון.', 'type': 'text'}], 'options': None}]
+
+{'role': 'user', 'metadata': None, 'content': [{'text': 'הוא מספר אחת???', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': 'סנופ דוג נחשב לאחד האמנים המשפיעים בעולם ההיפ-הופ, אך לא ניתן לקבוע אם הוא "מספר אחת" באופן חד משמעי, מכיוון שישנם אמנים רבים אחרים בעלי השפעה גדולה גם כן [3].', 'type': 'text'}], 'options': None},
+
+{'role': 'user', 'metadata': None, 'content': [{'text': 'כמה משלמים בשביל  מופע?', 'type': 'text'}], 'options': None},
+{'role': 'assistant', 'metadata': None, 'content': [{'text': 'אין מידע על כמה משלמים עבור מופע של סנופ דוג.', 'type': 'text'}], 'options': None}]
