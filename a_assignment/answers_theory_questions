@@ -1,0 +1,136 @@
+Q,1 --  What is tokenization? Give an example — show how the sentence "I'm learning NLP in 2025!" would be tokenized.
+
+A,1 --  tokenization is the method that convert strings into characters/words/sentences, for Exemple:
+Code: {         doc = nlp("I'm learning NLP in 2025!")
+                for token in doc:
+                print(token.text,token.pos_,token.dep_)        }
+Output:{        I PRON nsubj
+                'm AUX aux
+                learning VERB ROOT
+                NLP PROPN dobj
+                in ADP prep
+                2025 NUM pobj
+                ! PUNCT punct       }
+
+
+Q,2 --  What is the difference between stemming and lemmatization?
+Apply both to the words "running" and "better" and explain which preserves more linguistic meaning.
+
+A,2 -- the difference between stemming and lemmatization is that lemma go the the original value of the word by
+logic connection in the sentence, on the other hand stemming ignore any logic in the sentence and can even cut the word with no really explanation.
+lemma ex: running --> run ,, better --> well
+stemm ex: running --> run ,, better --> bet
+
+
+Q,3 --  What does TF-IDF stand for? Explain in plain language why the word "the" scores almost zero in TF-IDF,
+while the word "photosynthesis" would score high.
+
+A,3 -- TF-IDF is a formula to get the rarity of the words the document has, its giving score for how much the word is rare(biggest=rarest).
+"photosynthesis" this word is rare and probably wont repeat again so its got high score,
+on the other hand "the" is very common, almost every sentence contain this word so its got less score(every doc by its own).
+
+
+Q,4 --  What is a sentence embedding? How is it fundamentally different from one-hot encoding?
+Give one advantage embeddings have that one-hot vectors don't.
+
+A,4 -- sentence embedding is a way to store documents into table of vectors, each vector represents each chunk on doc, each vector
+is a list of numbers that represents the logic on each chunk. that how its get meaning and when question is asked its convert the question
+to new vector and check similarity to other vector in the vector_db. the one-hot encoding is a way to know each word or full sentence(not recommended)
+by only counting each one as a full string and if there is the word/sentence another time its get +1 to the string to the specific word/sentence
+but the word/sentence as the string does not considerate any meaning in it,in the end you get a table of how many time
+each chunk was count and that is it. unlike the embedding way.
+
+
+Q,5 --  Explain cosine similarity in plain language.
+If two document vectors point in almost the same direction, what does that tell us about the documents they represent?
+
+A,5 -- cosine similarity is a way to find the vector that is pointing to the same direction as the question vector,
+this way the length of the vector is not effective because cosine similarity is formula with the angle of the question vector.
+we find the most little angle that calculate with the question vector and that's the answer vector.
+
+Bonus (+0.5 optional): When might Euclidean distance be a poor choice for comparing embeddings?
+
+A,Bonus -- Euclidean distance is a weak way to calculate similarity because the length of the vector effect the result,
+for exemple, can be a vector with length(5) that will represent the same meaning as length(12).
+the Euclidean distance will show that this two vectors are far different,
+while the cosine similarity will show they are closer.
+
+
+Q,6 --  Why can't a regular SQL query like WHERE description LIKE '%pizza%' find semantically similar documents?
+What does a vector index solve that SQL can't?
+
+A,6 -- vectorstore saving also the meaning in the vector values, the SQL query will search for a word
+that contain the word 'pizza' but what if in the document they wrote "a flatbread with tomato sauce and cheese"? failure.
+
+
+Q,7 --  What problem does RAG solve that a plain LLM (without RAG) cannot? Give a concrete example
+of when you would choose RAG over just prompting the LLM directly.
+
+A,7 -- plain llm work perfect and all but the databases he practice on is not including your
+personal data as specific exam like Legal practice or Architecture if you have those files
+on your computer llm not gonna answer as from your data but the plain llm data sources,
+rag system can read your file and like a chatbot with llm's engine you get your required answer.
+
+
+Q,8 --  Describe the 3 main steps of a RAG pipeline in the correct order.
+Be clear about what happens at ingestion time (when you load documents) vs query time (when a user asks a question).
+
+A,8 -- after upload of your pdf/docs file the rag go in this order: chunking,embedding,vectorstore,retriever,and then you build the chain.
+first: chunking, split the text into sentences array as the defined splitter you choose.
+second: embedding, convert the sentences array into vector_db by OPENAI_KEY or HUGGINGFACE_KEY or local docker-compose.
+third: vectorstore, you store your vectors with chroma then you can define your retriever with as_retriever function.
+forth: retriever, you define your retriever(the object that pull the answer) right after you define your vectorstore with croma.
+you have a few methods of retriever but we use chroma so the retriever is plain function in this chroma object(using the distance cosine (1-cosine similarity)).
+
+Q,9 --  What is the difference between a Docker image and a Docker container? Use an analogy to explain.
+
+A,9 -- docker image is the config you install in your cmd it constitutes this config on your docker.
+if you delete it, the cmd gonna need to pull again the config from the internet with the docker-compose.
+on the other hand the container is the running instance of the image in your docker like local ollama config if you want to use it local
+for access you must active the container.
+analogy: image - installed file instructions, container - running instance of the image(perfume recipe and the actual perfume)
+
+
+Q,10 --  What is the difference between a simple LLM chatbot and an AI agent with tools?
+Give one concrete example of a "tool" and explain why it makes the agent more capable.
+
+A,10 --  simple llm handling only the question - you ask he answer and return answer directly,
+An AI agent always using the llm as a reasoning engine,also he know if he can solve the problem
+by using his tools like calculator or http request, or to get his answer by the llm.
+this way capable improving speed, also decrease the tokens you are using while the conversation because he's using his tolls instead.
+think on structured calculator instead of asking the llm to compute a calculation, the agent can use a structured calculator.
+
+
+Q,11 --  What is MCP (Model Context Protocol)?
+What problem does it solve for AI coding assistants like GitHub Copilot? Name two examples of things an MCP server might expose to an AI assistant
+
+A,11 -- MCP is an standard format that expose to an AI agents to get tools and data sources, this way its solve the problem that any API's or TOOLS
+using other formats depend on the creator. but MCP is a unique way to call tools for the agent
+
+
+Q,12 --  What are Agent Skills in the context of AI coding assistants? How are they different from just writing instructions in a plain prompt?
+Show a minimal example of what a skill's .md metadata block might look like.
+
+A,12 -- Agent skills is a way to guide the agent to get the answer, a plain prompt is way to ask the llm question and give the llm
+some description of what he suppose to do.
+Agent skills is a way to give llm instructions to handle the question,also this way you tell the llm when to use it
+and what way to answer it, prompt more manual way unlike Agent skills is a automatic and reusable prompt that help the llm to give structured answer.
+
+SKILL.md example:
+GOAL:
+    help analyze postgres queries for better performance
+WHEN TO USE:
+    - when the user asks about slow queries.
+    - when the user ask about optimization.
+INSTRUCTIONS:
+    1. analyze the query structure.
+    2. check for performance issue.
+    3. suggest optimizations.
+    4. rewrite the query in optimized way.
+    5. recommend on question format, give example.
+OUTPUT FORMAT:
+    - explain the issue briefly
+    - suggest improvements
+    - provide example of the better query
+
+
