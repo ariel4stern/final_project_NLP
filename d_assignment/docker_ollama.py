@@ -2,7 +2,7 @@ import time
 import requests
 from langchain_ollama import ChatOllama
 
-# Pulling the model llm on terminal : docker exec ollama ollama pull llama3:8b
+# Pulling the model llm on terminal to your enviroment: docker exec ollama ollama pull llama3:8b
 
 DEFAULT_BASE_URL   = "http://localhost:11434"
 DEFAULT_MODEL      = "llama3:8b"
