@@ -1,0 +1,1043 @@
+{
+  "name": "tlg_bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -832,
+        -496
+      ],
+      "id": "2526998f-99be-4b90-b263-e113fc0adcd6",
+      "name": "Telegram Trigger",
+      "webhookId": "f8689ea9-df3c-4e60-9b75-92ae3fe7eb5b",
+      "credentials": {
+        "telegramApi": {
+          "id": "peEFpZkcoj8K1T6L",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are professional assistant Extract relevant details,\nBe careful for spelling errors and punctuation.",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "=Extract details as:\n-event: find what made the client talk\n  with us, extract only as this strings:\n  \"reservation\" or \"cancellation\"\n-booking_id: find the number reference\n  to the order booking id extract as \n  number in string type\n  instead\n-name: find the name of the client,\n\nAll informationmust be\nfrom the following\ntext and ONLY from this text:\n{{ $json.message.text }}\n "
+            },
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "=Extract also the chat_id of the client\nfrom: {{ $json.message.from.id }}\n\n"
+            },
+            {
+              "message": "=Extract all details as JSON FROMAT,\n{\n\"booking_id\": \"value\",\nstring(extracted_number)\n\"event\":\"reservation\" or \"cancellation\",\n\"name:\"value\",\n\"chat_id\": \"value\"\n}\nif you did not find specific detail \nmetioned, return null in value instead."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -848,
+        -800
+      ],
+      "id": "26815bbd-05bd-4297-86e2-bd8116cc4f9f",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5",
+          "mode": "list",
+          "cachedResultName": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        -672
+      ],
+      "id": "4d09bbc9-f365-453a-9552-1feb7afa9cbb",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "RS3O5RtbXJ3soC3M",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text;\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  throw new Error(\"Invalid JSON from LLM: \" + e.message);\n}\n\nreturn [\n{\n  json: parsed\n}\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -800
+      ],
+      "id": "a2fb19f7-9f55-4d04-867e-52fd47a037cd",
+      "name": "Extract json format"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "09fa2608-99a0-48c5-8f44-946d87083b99",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "cancellation",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -32,
+        -816
+      ],
+      "id": "3d5f4d56-605a-404d-83ef-69843d804295",
+      "name": "if cancellation"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "=pending"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        -544
+      ],
+      "id": "1881e6e5-796f-4c9c-a802-3c105544077b",
+      "name": "If row exists in input_pyton_data"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "=booking_id",
+              "keyValue": "={{ $json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "pending_to_cancel"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        -752
+      ],
+      "id": "d12ca0bf-a708-4c51-b373-e3a78da6da7f",
+      "name": "If row exists in input_python_data"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.name }},\nyour reservation has Confirmed Successfully!\nDate:  ~~  {{ $json.date }}\nTime:  ~~  {{ $json.time }}\nWaiting to see you!\n\nTo be sure about you are registered\ngo back to the restaraunt chat\nwebsite, and press the Confirm\nbutton for absolute confirmation",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        -208
+      ],
+      "id": "23feb74f-9969-4936-8dd7-f5709550dbe2",
+      "name": "Send a Confirmation",
+      "webhookId": "d22de2b3-97f6-445a-97dd-b4a0c588688a",
+      "credentials": {
+        "telegramApi": {
+          "id": "peEFpZkcoj8K1T6L",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.name }},\nyour reservation has Cancelled Successfully!\nSee you next time!\n\nTo be sure about you are registered\ngo back to the restaraunt chat\nwebsite, and press the Confirm\nbutton for absolute confirmation",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        -576
+      ],
+      "id": "72763407-5bfa-4afe-9a90-8156bd165340",
+      "name": "Send a Cancellation",
+      "webhookId": "1c710511-0556-46f4-bc3a-829593caa531",
+      "credentials": {
+        "telegramApi": {
+          "id": "peEFpZkcoj8K1T6L",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "booking_id": "={{ $('Get Cancelled row').item.json.booking_id }}",
+            "event": "=cancelled"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event",
+              "displayName": "event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        -352
+      ],
+      "id": "157acc32-f614-4edc-aeea-97f49e6f5c6d",
+      "name": "Insert cancellation row"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6537dce1-b8d3-4b58-994c-29b05810ebe3",
+              "leftValue": "={{ $json.booking_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "01dfdc3c-073d-46a8-ab77-f6d4212e1620",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "null",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0df8948c-83d9-461f-ac02-14abd3458e83",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        -800
+      ],
+      "id": "165c5132-5c0f-49a6-8ad8-50ae8aaf64c0",
+      "name": "If booking_id and event and name is not null"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "=pending_to_cancel"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -1024
+      ],
+      "id": "d1013ae8-c266-4ac2-afff-5df888d8f618",
+      "name": "If row does not exists in input_python_data"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "pending"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        -896
+      ],
+      "id": "930ec589-0f8a-4e92-89be-e04091e2dda8",
+      "name": "If row does not exists in input_python_data1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "=pending"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "confirmed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        -400
+      ],
+      "id": "5ae8be85-f7ac-4fc8-8a20-7d610c91a107",
+      "name": "Update to confirmed input_pyton_data",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $('If booking_id and event and name is not null').item.json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $('If booking_id and event and name is not null').item.json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "pending_to_cancel"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "cancelled"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -576
+      ],
+      "id": "94569149-5271-4326-8ca7-b36706f8e664",
+      "name": "Update to cancelled input_pyton_data"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $('Extract json format').item.json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "cancelled"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        -576
+      ],
+      "id": "3edb3080-9aa5-4c83-b821-771af7743dde",
+      "name": "Get Cancelled row"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "booking_id": "={{ $('If row exists in input_pyton_data').item.json.booking_id }}",
+            "event": "=confirmed"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event",
+              "displayName": "event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -208
+      ],
+      "id": "ed7abebf-5107-4c3c-9ab4-2275fbdb8cba",
+      "name": "Insert confirmation row"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $('Extract json format').item.json.booking_id }}"
+            },
+            {
+              "keyName": "name",
+              "keyValue": "={{ $json.name }}"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "confirmed"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -208
+      ],
+      "id": "a0ef4df4-d691-41f5-924a-c8ae00052db3",
+      "name": "Get Confirmed row"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=In your confirmation message you \nshould mention:\n-event: (reservation/cancellation),\n-your name from the order in the browser,\n-booking id number from the main website.\n\nProbably you type incorrect details,\nTry Again.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        -1088
+      ],
+      "id": "1221f199-8284-48da-a266-123dfc033b98",
+      "name": "incorrect details reply",
+      "webhookId": "7cf0dfdc-9005-42f6-b5a8-b64651fca8e0",
+      "credentials": {
+        "telegramApi": {
+          "id": "peEFpZkcoj8K1T6L",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "=In your confirmation message you \nshould mention:\n-event: (reservation/cancellation),\n-your name from the order in the browser,\n-booking id number from the main website.\n\nExemple:\"my name yaron,i want to confirm/cancel my reservation booking id:1\"",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        -352
+      ],
+      "id": "fdc46749-a836-4ea5-b148-78d7fed8639e",
+      "name": "missing details reply",
+      "webhookId": "b1169070-18dd-4462-b54a-5e36ab9de920",
+      "credentials": {
+        "telegramApi": {
+          "id": "peEFpZkcoj8K1T6L",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "gt",
+              "keyValue": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -368
+      ],
+      "id": "03f50618-1f87-423d-bcd5-8d9ad32b672b",
+      "name": "Delete row(s)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Extract json format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract json format": {
+      "main": [
+        [
+          {
+            "node": "If booking_id and event and name is not null",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "if cancellation": {
+      "main": [
+        [
+          {
+            "node": "If row does not exists in input_python_data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If row exists in input_python_data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If row exists in input_pyton_data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If row does not exists in input_python_data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row exists in input_pyton_data": {
+      "main": [
+        [
+          {
+            "node": "Update to confirmed input_pyton_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row exists in input_python_data": {
+      "main": [
+        [
+          {
+            "node": "Update to cancelled input_pyton_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Insert confirmation row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert cancellation row": {
+      "main": [
+        []
+      ]
+    },
+    "If booking_id and event and name is not null": {
+      "main": [
+        [
+          {
+            "node": "if cancellation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "missing details reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a Cancellation": {
+      "main": [
+        [
+          {
+            "node": "Insert cancellation row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row does not exists in input_python_data": {
+      "main": [
+        [
+          {
+            "node": "incorrect details reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row does not exists in input_python_data1": {
+      "main": [
+        [
+          {
+            "node": "incorrect details reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to confirmed input_pyton_data": {
+      "main": [
+        [
+          {
+            "node": "Get Confirmed row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to cancelled input_pyton_data": {
+      "main": [
+        [
+          {
+            "node": "Get Cancelled row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Cancelled row": {
+      "main": [
+        [
+          {
+            "node": "Send a Cancellation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Confirmed row": {
+      "main": [
+        [
+          {
+            "node": "Send a Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3859a607-e565-4768-a20c-4083f3ab28dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ea9b3c21d2d39b2d4d9acddd515d308e997c78cbec529baa6fb9cf2c3082b338"
+  },
+  "id": "4N0gxVgiqFExjs30",
+  "tags": []
+}

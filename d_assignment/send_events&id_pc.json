@@ -1,0 +1,252 @@
+{
+  "name": "send_events&id_pc",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "events_and_ids",
+        "columns": {
+          "column": [
+            {
+              "name": "booking_id",
+              "type": "number"
+            },
+            {
+              "name": "event"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1376,
+        -656
+      ],
+      "id": "8df5fd84-965d-435d-a4c7-9eb4dd6d0c73",
+      "name": "create_event_ids"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event",
+              "condition": "neq",
+              "keyValue": "done"
+            }
+          ]
+        },
+        "orderBy": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -976,
+        -784
+      ],
+      "id": "babf5684-ef36-40d9-9079-2c4fe7f66db6",
+      "name": "Get new rows"
+    },
+    {
+      "parameters": {
+        "path": "=changes_info",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        -784
+      ],
+      "id": "08fcba37-b21d-4c4f-b0cc-e699e36eba85",
+      "name": "Webhook Send",
+      "webhookId": "9c04e045-e614-483c-9d00-e054ca6fe53b"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -752,
+        -784
+      ],
+      "id": "d4357bba-4671-4d7e-b82a-75512de0c21c",
+      "name": "Respond to Webhook sending rows",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event",
+              "condition": "neq",
+              "keyValue": "done"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event": "done"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event",
+              "displayName": "event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -928,
+        -576
+      ],
+      "id": "d7460998-952c-497c-b094-647b607687dc",
+      "name": "Update delivered rows to done"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRows",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WM56u74aYo9fOPtt",
+          "mode": "list",
+          "cachedResultName": "events_and_ids",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/WM56u74aYo9fOPtt"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event",
+              "keyValue": "done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        -576
+      ],
+      "id": "2b85e9ec-e5ff-4d4e-ade7-0bea940d856a",
+      "name": "Delete done rows"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "create_event_ids": {
+      "main": [
+        []
+      ]
+    },
+    "Get new rows": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook sending rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Send": {
+      "main": [
+        [
+          {
+            "node": "Get new rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook sending rows": {
+      "main": [
+        [
+          {
+            "node": "Update delivered rows to done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update delivered rows to done": {
+      "main": [
+        [
+          {
+            "node": "Delete done rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete done rows": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "301e3261-7f87-4b33-81a1-2e8cffd15a65",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ea9b3c21d2d39b2d4d9acddd515d308e997c78cbec529baa6fb9cf2c3082b338"
+  },
+  "id": "5Yc9L5FQcVcHUj4A",
+  "tags": []
+}

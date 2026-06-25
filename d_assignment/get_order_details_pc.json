@@ -1,0 +1,388 @@
+{
+  "name": "get_order_details_pc",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "post_data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        -176
+      ],
+      "id": "0d656883-7bcf-4e22-be22-7dd275aef9bb",
+      "name": "Webhook",
+      "webhookId": "08e576f2-2ce2-414a-8dd1-995d934cc9c1"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "input_python_data",
+        "columns": {
+          "column": [
+            {
+              "name": "booking_id",
+              "type": "number"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "date"
+            },
+            {
+              "name": "time"
+            },
+            {
+              "name": "status"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1024,
+        -320
+      ],
+      "id": "a1d1ecec-3eb6-437e-a463-f1c29eb18e26",
+      "name": "Create input_python_data"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.body.booking_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        -320
+      ],
+      "id": "736b0f3b-d067-4895-a885-4123fb8fbcd7",
+      "name": "If row exists with same booking_id"
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.body.booking_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        -80
+      ],
+      "id": "7f3b75e3-e3c3-4a1c-b4ad-07950bb5b366",
+      "name": "If row does not exists with same booking_id"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "booking_id",
+              "keyValue": "={{ $json.body.booking_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $('Webhook').item.json.body.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        -320
+      ],
+      "id": "5b67bf58-8c9e-4fae-891a-760efc85bd9f",
+      "name": "Update row in input_python_data"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "booking_id": "={{ $json.body.booking_id }}",
+            "name": "={{ $json.body.name }}",
+            "date": "={{ $json.body.date }}",
+            "time": "={{ $json.body.time }}",
+            "status": "={{ $json.body.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "booking_id",
+              "displayName": "booking_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        -80
+      ],
+      "id": "117034e2-36bd-450d-b69f-6f5ece1493d2",
+      "name": "Insert row in input_python_data"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "PN5JwsMgqt90zYAe",
+          "mode": "list",
+          "cachedResultName": "input_python_data",
+          "cachedResultUrl": "/projects/cGkFe6wgdomOz0An/datatables/PN5JwsMgqt90zYAe"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -128,
+        -192
+      ],
+      "id": "ecdbecc4-21db-4830-9682-dd24814e0e57",
+      "name": "Get All rows (exposure)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If row exists with same booking_id",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If row does not exists with same booking_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row exists with same booking_id": {
+      "main": [
+        [
+          {
+            "node": "Update row in input_python_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row does not exists with same booking_id": {
+      "main": [
+        [
+          {
+            "node": "Insert row in input_python_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in input_python_data": {
+      "main": [
+        [
+          {
+            "node": "Get All rows (exposure)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row in input_python_data": {
+      "main": [
+        [
+          {
+            "node": "Get All rows (exposure)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All rows (exposure)": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "290532db-b16b-41fe-9354-4fc7aa412e24",
+  "meta": {
+    "instanceId": "ea9b3c21d2d39b2d4d9acddd515d308e997c78cbec529baa6fb9cf2c3082b338"
+  },
+  "id": "XdgEjjP70S7ECqF7",
+  "tags": []
+}
